@@ -4,11 +4,30 @@ import csv
 import sys
 from functools import wraps
 from pprint import pp, pprint
+import time
+import platform
 from traceback import print_exception
+from typing import Union
+import subprocess
 
-from PyQt5 import uic
-from PyQt5.QtGui import QPixmap, QPalette, QBrush
+from PyQt5 import uic, QtGui
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QPalette, QBrush, QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtWidgets import *
+
+from templates.MainWindowTemplate import Ui_MainWindow
+
+
+SN_LIST = []
+
+
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        subprocess.Popen(["open", path])
+    else:
+        subprocess.Popen(["xdg-open", path])
 
 
 def handle_exception(exc_type, exc_value, exc_traceback):
@@ -34,7 +53,7 @@ def dbg(filename):
 
 
 # Чтобы программа всегда могла найти путь к файлам
-@dbg(r"log.txt")
+@dbg(r"data_files/log.txt")
 def resource_path(relative):
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative)
@@ -75,19 +94,41 @@ class EnterSNListWindow(QMainWindow):
         super().__init__()
         self.show()
         self.dialog = None
-        self.SN_LIST = []
+        if SN_LIST != []:
+            self.SN_LIST = SN_LIST
+        else:
+            self.SN_LIST = []
         self.setup_UI(enter_type)
 
     def setup_UI(self, enter_type):
         self.setFixedSize(700, 600)
+        # self.resize(700, 600)
         # Система координат
         self.x = 700
         self.y = 600
         # Загрузка интерфейса
-        uic.loadUi(resource_path("templates/MainWindowTemplate.ui"), self)
-        self.setCentralWidget(self.gridWidget)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        # """ uic.loadUi(resource_path("templates/MainWindowTemplate.ui"), self)"""
+        self.setCentralWidget(self.ui.gridWidget)
+        # Установка фона
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
+        self.setPalette(palette)
 
+        self.modify_table()
+        # Подключение кнопок
+        self.ui.save_btn.clicked.connect(self.save_table)
+        self.ui.return_home_btn.clicked.connect(self.return_back)
+        self.ui.delete_all_btn.clicked.connect(self.delete_all)
+        self.ui.code_scanned_btn.clicked.connect(self.code_scanned)
+        self.ui.add_data_btn.clicked.connect(self.add_data)
         # Options
+        for elem in self.SN_LIST:
+            self.model.appendRow([QStandardItem(elem),
+                                  QStandardItem(""),
+                                  QStandardItem("Not found"),
+                                  ])
         if enter_type == "opt_db":
             try:
                 db_path_file = open(resource_path("data_files/db_path.txt"), "r")
@@ -140,10 +181,105 @@ class EnterSNListWindow(QMainWindow):
         elif enter_type == "opt_multiple":
             pass
 
-        pprint(self.SN_LIST)
         # Временно
         for elem in self.SN_LIST:
-            self.listWidget.addItem(str(elem))
+            self.model.appendRow([QStandardItem(elem),
+                                  QStandardItem(""),
+                                  QStandardItem("Not found"),
+                                  ])
+
+    def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
+        if event.key() == Qt.Key_Return:
+            code = self.ui.scan_field.text().strip()
+            if code != "":
+                self.code_scanned()
+
+    def code_scanned(self):
+        self.ui.add_data_btn.hide()
+        code = self.ui.scan_field.text().strip()
+        if code != "":
+            table_code = self.model.findItems(code, flags=Qt.MatchExactly, column=0)
+            if not table_code:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setWindowModality(Qt.ApplicationModal)
+                msg.setText("Warning!")
+                msg.setInformativeText(f'Serial number \'{code}\' was not found in initial list. It will be added at your list with "Added later" status.')
+                msg.setWindowTitle("Warning")
+                msg.exec_()
+
+                item = QStandardItem(code)
+                item_confirmation = QStandardItem(code)
+                their_status = QStandardItem("Added later")
+
+                item.setBackground(self.was_not_here_brush)
+                item_confirmation.setBackground(self.was_not_here_brush)
+                their_status.setBackground(self.was_not_here_brush)
+
+                self.model.appendRow([item, item_confirmation, their_status])
+            else:
+                item = table_code[0]
+                new_item = QStandardItem(item.text())
+                code_found = QStandardItem("Found")
+                # Красим
+                item.setBackground(self.okay_brush)
+                new_item.setBackground(self.okay_brush)
+                code_found.setBackground(self.okay_brush)
+                # Засовываем в таблицу
+                self.model.setItem(item.row(), 1, new_item)
+                self.model.setItem(item.row(), 2, code_found)
+            self.ui.scan_field.clear()
+
+    def save_table(self):
+        try:
+            csv_path_file = open(resource_path("data_files/csv_path.txt"), "r")
+        except FileNotFoundError:
+            csv_path_file = open(resource_path("data_files/csv_path.txt"), "w")
+            csv_path_file.write("/")
+            self.csv_path = "/"
+            csv_path_file.close()
+        finally:
+            self.csv_path = open(resource_path("data_files/csv_path.txt"), "r").readlines()[0].strip()
+
+        filename, _ = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
+                                                  self.csv_path.rsplit("/", maxsplit=1)[0] + "/" + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
+                                                  "*.csv")
+        with open(filename, "w") as outf:
+            writer = csv.writer(outf, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(["number", "confirmation", "status"])
+            for row in range(0, self.model.rowCount()):
+                writer.writerow([self.model.item(row, 0).text(),
+                                 self.model.item(row, 1).text(),
+                                 self.model.item(row, 2).text(),
+                                 ])
+        with open(resource_path("data_files/csv_path.txt"), "w") as path_file:
+            path_file.write(filename)
+        try:
+            open_file(filename.rsplit("/", maxsplit=1)[0])
+            # open_file(filename)
+            # subprocess.call(["open", filename.rsplit("/", maxsplit=1)[0]])
+        except Exception as e:
+            pass
+
+    def add_data(self):
+        SN_LIST.extend(self.SN_LIST)
+        self.return_back()
+
+    def delete_all(self):
+        self.model.clear()
+        self.modify_table()
+
+    def modify_table(self):
+        self.model = QStandardItemModel()
+        self.ui.tableView.setModel(self.model)
+        self.model.setHorizontalHeaderLabels(["number", "confirmation", "status"])
+        # Горизонтальная метка расширяет остальную часть окна и заполняет форму
+        self.ui.tableView.horizontalHeader().setStretchLastSection(True)
+        # Горизонтальное направление, размер таблицы увеличивается до соответствующего размера
+        self.ui.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        # Кисти
+        self.okay_brush = QBrush(QColor(0, 255, 127, 150))
+        self.was_not_here_brush = QBrush(QColor(0, 100, 0, 180))
 
     def get_cursor(self, db_filename):
         con = sqlite3.connect(db_filename, uri=True)
@@ -155,9 +291,6 @@ class EnterSNListWindow(QMainWindow):
             self.dialog.close()
         self.close()
         self.next = SelectEnterType()
-
-    def opt_db_dialog_accepted(self):
-        self.dialog.textEdit
 
 
 if __name__ == '__main__':
