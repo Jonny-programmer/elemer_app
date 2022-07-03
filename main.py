@@ -266,8 +266,13 @@ class EnterSNListWindow(QMainWindow):
         self.return_back()
 
     def delete_all(self):
+        pixmap = QPixmap(resource_path("img/splash.png"))
+        splash = QSplashScreen(pixmap)
+        splash.show()
         self.model.clear()
         self.modify_table()
+        time.sleep(2)
+        splash.finish(self)
 
     def modify_table(self):
         self.model = QStandardItemModel()
