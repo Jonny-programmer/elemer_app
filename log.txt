@@ -1,0 +1,54 @@
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 284, in add_data
+    self.return_back()
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 317, in return_back
+    if self.dialog_2:
+AttributeError: 'EnterSNListWindow' object has no attribute 'dialog_2'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 84, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+KeyboardInterrupt

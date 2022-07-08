@@ -19,7 +19,8 @@ from templates.MainWindowTemplate import Ui_MainWindow
 
 
 SN_LIST = []
-
+OPERATOR_NUM = 1
+OPERATORS_INPUTS_LIST = [set()]
 
 def open_file(path):
     if platform.system() == "Windows":
@@ -94,8 +95,9 @@ class EnterSNListWindow(QMainWindow):
         super().__init__()
         self.show()
         self.dialog = None
+        self.dialog_2 = None
         if SN_LIST != []:
-            self.SN_LIST = SN_LIST
+            self.SN_LIST = list(set(SN_LIST))
         else:
             self.SN_LIST = []
         self.setup_UI(enter_type)
@@ -161,25 +163,40 @@ class EnterSNListWindow(QMainWindow):
                 self.tuple_sn_list = self.cur.execute("""SELECT EsnValueKey 
                     FROM TableEncSerNum WHERE EsnOrder=?""", (order_num,)).fetchall()
                 for elem in self.tuple_sn_list:
-                    if str(elem[0]) != "":
+                    if str(elem[0]) != "" and str(elem[0]) not in self.SN_LIST:
                         self.SN_LIST.append(str(elem[0]))
                 self.order_data = self.cur.execute("""SELECT OrdDateCr, OrdCount 
                     FROM TableOrder WHERE OrdKey=?""", (order_num,))
         elif enter_type == "opt_by_himself":
             self.dialog = QDialog(self)
             uic.loadUi(resource_path("templates/PasteSerialNumbersTemplate.ui"), self.dialog)
-            # self.dialog.buttonBox.rejected.connect(self.return_back)
-            # self.dialog.buttonBox.accepted.connect(self.opt_db_dialog_accepted)
             if self.dialog.exec():
                 text = self.dialog.textEdit.toPlainText()
                 for line in text.split("\n"):
                     number = line.strip()
-                    if number != '':
+                    if number != '' and number not in self.SN_LIST:
                         self.SN_LIST.append(number)
             else:
                 self.return_back()
         elif enter_type == "opt_multiple":
             pass
+            # self.dialog_2 = QDialog(self)
+            # uic.loadUi(resource_path("templates/MultiOperatorTemplate.ui"), self.dialog_2)
+            # text = "Введите, пожалуйста, список серийных номеров, разделенных переносом строки." \
+            #        "Вы можете использовать для этого сканер штрих-кодов."
+            # self.dialog_2.label.setText(text)
+            # self.dialog_2.comment_label.setText(f"Оператор номер {OPERATOR_NUM}")
+            # if self.dialog_2.exec():
+            #     text = self.dialog_2.textEdit.toPlainText()
+            #     for line in text.split("\n"):
+            #         number = line.strip()
+            #         if number != '':
+            #             OPERATORS_INPUTS_LIST[OPERATOR_NUM - 1].add(number)
+            #     pass
+            #     OPERATOR_NUM += 1
+            #     OPERATORS_INPUTS_LIST.append(set())
+            # else:
+            #     self.return_back()
 
         # Временно
         for elem in self.SN_LIST:
@@ -231,6 +248,8 @@ class EnterSNListWindow(QMainWindow):
             self.ui.scan_field.clear()
 
     def save_table(self):
+        OPERATOR_NUM = 1
+        OPERATORS_INPUTS_LIST = [set()]
         try:
             csv_path_file = open(resource_path("data_files/csv_path.txt"), "r")
         except FileNotFoundError:
@@ -266,6 +285,8 @@ class EnterSNListWindow(QMainWindow):
         self.return_back()
 
     def delete_all(self):
+        OPERATOR_NUM = 1
+        OPERATORS_INPUTS_LIST = [set()]
         pixmap = QPixmap(resource_path("img/splash.png"))
         splash = QSplashScreen(pixmap)
         splash.show()
@@ -294,6 +315,8 @@ class EnterSNListWindow(QMainWindow):
     def return_back(self):
         if self.dialog:
             self.dialog.close()
+        if self.dialog_2:
+            self.dialog_2.close()
         self.close()
         self.next = SelectEnterType()
 
