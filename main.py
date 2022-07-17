@@ -1,14 +1,13 @@
-import os
-import sqlite3
 import csv
-import sys
-from functools import wraps
-from pprint import pp, pprint
-import time
+import os
 import platform
-from traceback import print_exception
-from typing import Union
+import sqlite3
 import subprocess
+import sys
+import time
+from functools import wraps
+from pprint import pp
+from traceback import print_exception
 
 from PyQt5 import uic, QtGui
 from PyQt5.QtCore import Qt
@@ -17,12 +16,62 @@ from PyQt5.QtWidgets import *
 
 from templates.MainWindowTemplate import Ui_MainWindow
 
-
 SN_LIST = []
-OPERATOR_NUM = 1
-OPERATORS_INPUTS_LIST = [set()]
+# Следующие методы нужны для взаимодействия с локальной БД - реализация мультиоператорного ввода
+
+
+def update_operator_num(order_num, cur, conn):
+    table_op_quant = cur.execute("""SELECT operators_quant FROM control_table WHERE order_num=?""", (order_num,)).fetchone()
+    if not table_op_quant:
+        cur.execute("INSERT INTO control_table (order_num, operators_quant) VALUES (?, 0)", (order_num,))
+        table_op_quant = 1
+    else:
+        table_op_quant = table_op_quant[0] + 1
+    cur.execute("""UPDATE control_table SET operators_quant=? WHERE order_num=?""", (table_op_quant, order_num,))
+    conn.commit()
+    call_string = str(f"ALTER TABLE table_{order_num} ADD operator_{table_op_quant} VARCHAR(20)")
+    cur.execute(call_string)
+    conn.commit()
+
+
+def reset_operator_num(order_num, cur, conn):
+    cur.execute("""UPDATE control_table SET operators_quant=0 WHERE order_num=?""", (order_num,))
+    conn.commit()
+
+
+def get_operator_num(order_num, cur, _):
+    table_op_quant: int = int(cur.execute("""SELECT operators_quant FROM control_table WHERE order_num=?""", (order_num,)).fetchone()[0])
+    return table_op_quant
+
+
+def modify_local_db(order_num, cur, con):
+    cur.execute("""CREATE TABLE IF NOT EXISTS control_table(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                                            order_num TEXT NOT NULL,
+                                                            operators_quant INTEGER DEFAULT 0 NOT NULL)""")
+    con.commit()
+    call_string = str(f"CREATE TABLE IF NOT EXISTS {'table_'+ str(order_num)}(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)")
+    cur.execute(call_string)
+    con.commit()
+
+
+def get_cursor(db_filename):
+    # Получение курсора у любой БД
+    con = sqlite3.connect(db_filename, uri=True)
+    cur = con.cursor()
+    return con, cur
+
+
+def length(a: list):
+    # Служебный метод для определения длины списка, исключая пустые элементы
+    list_length: int = 0
+    for elem in a:
+        if elem:
+            list_length += 1
+    return list_length
+
 
 def open_file(path):
+    # Служебный метод - открыть Проводник / Finder
     if platform.system() == "Windows":
         os.startfile(path)
     elif platform.system() == "Darwin":
@@ -38,6 +87,8 @@ def handle_exception(exc_type, exc_value, exc_traceback):
 
 
 def dbg(filename):
+    # Декоратор, который записывает в log.txt все операции с файлами
+    # Нужен для корректной сборки .exe-шника
     def decorator(func):
         @wraps(func)
         def wrapper(*a, **kwa):
@@ -53,9 +104,9 @@ def dbg(filename):
     return decorator
 
 
-# Чтобы программа всегда могла найти путь к файлам
 @dbg(r"data_files/log.txt")
 def resource_path(relative):
+    # Чтобы программа всегда могла найти путь к файлам
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative)
     return os.path.join(relative)
@@ -71,8 +122,6 @@ class SelectEnterType(QMainWindow):
         self.setWindowTitle("Serial numbers verification")
         self.setFixedSize(700, 600)
         # Система координат
-        self.x = 700
-        self.y = 600
         # Загрузка интерфейса
         uic.loadUi(resource_path("templates/SelectEnterTypeTemplate.ui"), self)
         self.setCentralWidget(self.gridWidget)
@@ -94,20 +143,24 @@ class EnterSNListWindow(QMainWindow):
     def __init__(self, enter_type):
         super().__init__()
         self.show()
+        # Подключение к локальной базе данных
+        self.local_db_path = self.find_local_db_path()
+        self.local_con, self.local_cur = get_cursor(self.local_db_path)
+        # Всякое ненужное
         self.dialog = None
-        self.dialog_2 = None
-        if SN_LIST != []:
+        self.order_num = 0
+        self.last_order_num = 0
+        if SN_LIST:
             self.SN_LIST = list(set(SN_LIST))
         else:
             self.SN_LIST = []
         self.setup_UI(enter_type)
+        # Для подтверждения отсутствия повторений в таблице
+        self.added = []
 
     def setup_UI(self, enter_type):
         self.setFixedSize(700, 600)
         # self.resize(700, 600)
-        # Система координат
-        self.x = 700
-        self.y = 600
         # Загрузка интерфейса
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -126,11 +179,16 @@ class EnterSNListWindow(QMainWindow):
         self.ui.code_scanned_btn.clicked.connect(self.code_scanned)
         self.ui.add_data_btn.clicked.connect(self.add_data)
         # Options
+        self.added = []
         for elem in self.SN_LIST:
-            self.model.appendRow([QStandardItem(elem),
-                                  QStandardItem(""),
-                                  QStandardItem("Not found"),
-                                  ])
+            if elem not in self.added:
+                self.model.appendRow([QStandardItem(elem),
+                                      QStandardItem(""),
+                                      QStandardItem("Not found"),
+                                      ])
+                self.added.append(elem)
+
+        # Изучаем возможные способы ввода данных
         if enter_type == "opt_db":
             try:
                 db_path_file = open(resource_path("data_files/db_path.txt"), "r")
@@ -151,59 +209,88 @@ class EnterSNListWindow(QMainWindow):
             else:
                 with open(resource_path("data_files/db_path.txt"), "w") as path_file:
                     path_file.write(db_filename)
-                self.cur = self.get_cursor(db_filename)
+                # Подключение к базе данных
+                _, cur = get_cursor(db_filename)
                 # Максимальный номер заказа в БД
-                last_order_num = int(self.cur.execute("""SELECT MAX(OrdKey) FROM TableOrder;""").fetchone()[0])
+                self.last_order_num = int(cur.execute("""SELECT MAX(OrdKey) FROM TableOrder;""").fetchone()[0])
 
                 order_num, ok2_pressed = QInputDialog.getInt(
                     self, "", "Введите номер заказа",
-                    last_order_num, 1, last_order_num, 1)
+                    self.last_order_num, 1, self.last_order_num, 1)
                 if not ok2_pressed:
                     self.return_back()
-                self.tuple_sn_list = self.cur.execute("""SELECT EsnValueKey 
+                self.tuple_sn_list = cur.execute("""SELECT EsnValueKey 
                     FROM TableEncSerNum WHERE EsnOrder=?""", (order_num,)).fetchall()
                 for elem in self.tuple_sn_list:
                     if str(elem[0]) != "" and str(elem[0]) not in self.SN_LIST:
                         self.SN_LIST.append(str(elem[0]))
-                self.order_data = self.cur.execute("""SELECT OrdDateCr, OrdCount 
-                    FROM TableOrder WHERE OrdKey=?""", (order_num,))
+                self.order_data = cur.execute("""SELECT OrdDateCr, OrdCount 
+                    FROM TableOrder WHERE OrdKey=?""", (order_num,)).fetchall()
+                self.order_num = order_num
         elif enter_type == "opt_by_himself":
             self.dialog = QDialog(self)
             uic.loadUi(resource_path("templates/PasteSerialNumbersTemplate.ui"), self.dialog)
             if self.dialog.exec():
                 text = self.dialog.textEdit.toPlainText()
                 for line in text.split("\n"):
-                    number = line.strip()
-                    if number != '' and number not in self.SN_LIST:
-                        self.SN_LIST.append(number)
+                    clear_line = line.strip()
+                    if not clear_line.isdigit():
+                        if "производство" in clear_line.lower():
+                            self.order_num = clear_line.split()[4]
+                            print("----<>-----", self.order_num)
+                    else:
+                        number = clear_line
+                        if number != '' and number not in self.SN_LIST:
+                            self.SN_LIST.append(number)
             else:
                 self.return_back()
         elif enter_type == "opt_multiple":
-            pass
-            # self.dialog_2 = QDialog(self)
-            # uic.loadUi(resource_path("templates/MultiOperatorTemplate.ui"), self.dialog_2)
-            # text = "Введите, пожалуйста, список серийных номеров, разделенных переносом строки." \
-            #        "Вы можете использовать для этого сканер штрих-кодов."
-            # self.dialog_2.label.setText(text)
-            # self.dialog_2.comment_label.setText(f"Оператор номер {OPERATOR_NUM}")
-            # if self.dialog_2.exec():
-            #     text = self.dialog_2.textEdit.toPlainText()
-            #     for line in text.split("\n"):
-            #         number = line.strip()
-            #         if number != '':
-            #             OPERATORS_INPUTS_LIST[OPERATOR_NUM - 1].add(number)
-            #     pass
-            #     OPERATOR_NUM += 1
-            #     OPERATORS_INPUTS_LIST.append(set())
-            # else:
-            #     self.return_back()
+            ok_pressed = bool()
+            order_num, ok_pressed = QInputDialog.getInt(self, "", "Введите номер заказа",
+                                            self.last_order_num, 1, 40000, 1)
+            print("---> ok_pressed is now", ok_pressed)
+            if not ok_pressed:
+                self.return_back()
+            else:
+                self.order_num = order_num
+                # ВАЖНО!!
+                modify_local_db(self.order_num, self.local_cur, self.local_con)
+                update_operator_num(self.order_num, self.local_cur, self.local_con)
+                # ОБНОВЛЯЕМ ПОРЯДКОВЫЙ НОМЕР ОПЕРАТОРА
+                real_operator_num = get_operator_num(self.order_num, self.local_cur, self.local_con)
+                self.dialog = QDialog(self)
+                uic.loadUi(resource_path("templates/MultiOperatorTemplate.ui"), self.dialog)
+                text = "Введите, пожалуйста, список серийных номеров, разделенных переносом строки." \
+                       "Вы можете использовать для этого сканер штрих-кодов."
+                self.dialog.label.setText(text)
+                self.dialog.comment_label.setText(f"Оператор номер {get_operator_num(self.order_num, self.local_cur, self.local_con)}")
+                if self.dialog.exec():
+                    op_column_name = f"operator_{real_operator_num}"
+                    if op_column_name == "operator_1":
+                        # Получаем текст
+                        text = self.dialog.textEdit.toPlainText()
+                        for line in text.split("\n"):
+                            number = line.strip()
+                            if number and number not in self.SN_LIST:
+                                call_string = str(f"INSERT INTO table_{self.order_num}({op_column_name}) VALUES (\'{number}\')")
+                                print(call_string)
+                                self.local_cur.execute(call_string)
+                                self.local_con.commit()
+                                # Добавить в локальный список
+                                self.SN_LIST.append(number)
+                    else:
+                        pass
+                else:
+                    self.return_back()
 
-        # Временно
+        # Для надежности
         for elem in self.SN_LIST:
-            self.model.appendRow([QStandardItem(elem),
-                                  QStandardItem(""),
-                                  QStandardItem("Not found"),
-                                  ])
+            if elem not in self.added:
+                self.model.appendRow([QStandardItem(elem),
+                                      QStandardItem(""),
+                                      QStandardItem("Not found"),
+                                      ])
+                self.added.append(elem)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == Qt.Key_Return:
@@ -221,7 +308,9 @@ class EnterSNListWindow(QMainWindow):
                 msg.setIcon(QMessageBox.Warning)
                 msg.setWindowModality(Qt.ApplicationModal)
                 msg.setText("Warning!")
-                msg.setInformativeText(f'Serial number \'{code}\' was not found in initial list. It will be added at your list with "Added later" status.')
+                msg.setInformativeText(
+                    f'Serial number \'{code}\' was not found in initial list. It will be added at your list with '
+                    f'\"Added later\" status.')
                 msg.setWindowTitle("Warning")
                 msg.exec_()
 
@@ -248,8 +337,6 @@ class EnterSNListWindow(QMainWindow):
             self.ui.scan_field.clear()
 
     def save_table(self):
-        OPERATOR_NUM = 1
-        OPERATORS_INPUTS_LIST = [set()]
         try:
             csv_path_file = open(resource_path("data_files/csv_path.txt"), "r")
         except FileNotFoundError:
@@ -260,9 +347,18 @@ class EnterSNListWindow(QMainWindow):
         finally:
             self.csv_path = open(resource_path("data_files/csv_path.txt"), "r").readlines()[0].strip()
 
-        filename, _ = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
-                                                  self.csv_path.rsplit("/", maxsplit=1)[0] + "/" + time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
-                                                  "*.csv")
+        filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
+                                                            self.csv_path.rsplit("/", maxsplit=1)[
+                                                                0] + "/" + time.strftime(
+                                                                "%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
+                                                            "*.csv")
+        while not ok3_pressed:
+            filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
+                                                                self.csv_path.rsplit("/", maxsplit=1)[
+                                                                    0] + "/" + time.strftime(
+                                                                    "%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
+                                                                "*.csv")
+
         with open(filename, "w") as outf:
             writer = csv.writer(outf, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(["number", "confirmation", "status"])
@@ -278,15 +374,33 @@ class EnterSNListWindow(QMainWindow):
             # open_file(filename)
             # subprocess.call(["open", filename.rsplit("/", maxsplit=1)[0]])
         except Exception as e:
-            pass
+            print("Unexpected exception:", e)
+        # self.SN_LIST = []
+
+    def find_local_db_path(self):
+        try:
+            local_db_path_file = open(resource_path("data_files/local_db_path.txt"), "r")
+        except FileNotFoundError:
+            local_db_path_file = open(resource_path("data_files/local_db_path.txt"), "w")
+            local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self, "Select where to save a local database",
+                                                                     "/local_database.db", "*.db")
+            while not ok4_pressed:
+                local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self,
+                                                                         "Select where to save a local database",
+                                                                         "/local_database.db", "*.db")
+            local_db_path_file.write(local_db_path)
+            local_db_path_file.close()
+        finally:
+            local_db_path = open(resource_path("data_files/local_db_path.txt"), "r").readlines()[0].strip()
+        return local_db_path
 
     def add_data(self):
         SN_LIST.extend(self.SN_LIST)
         self.return_back()
 
     def delete_all(self):
-        OPERATOR_NUM = 1
-        OPERATORS_INPUTS_LIST = [set()]
+        self.SN_LIST = []
+        SN_LIST = []
         pixmap = QPixmap(resource_path("img/splash.png"))
         splash = QSplashScreen(pixmap)
         splash.show()
@@ -307,18 +421,14 @@ class EnterSNListWindow(QMainWindow):
         self.okay_brush = QBrush(QColor(0, 255, 127, 150))
         self.was_not_here_brush = QBrush(QColor(0, 100, 0, 180))
 
-    def get_cursor(self, db_filename):
-        con = sqlite3.connect(db_filename, uri=True)
-        cur = con.cursor()
-        return cur
-
     def return_back(self):
+        self.order_num = 0
+        print("Returning back!")
         if self.dialog:
             self.dialog.close()
-        if self.dialog_2:
-            self.dialog_2.close()
         self.close()
         self.next = SelectEnterType()
+
 
 
 if __name__ == '__main__':
