@@ -8,13 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[
-    ("/Users/eremin/Documents/GitHub/elemer_app/templates/MainWindowTemplate.py", "."),
-    ("/Users/eremin/Documents/GitHub/elemer_app/templates/PasteSerialNumbersTemplate.ui", "."),
-    ("/Users/eremin/Documents/GitHub/elemer_app/templates/SelectEnterTypeTemplate.ui", "."),
-    ("/Users/eremin/Documents/GitHub/elemer_app/backgrounds/img.png", "."),
-    ("/Users/eremin/Documents/GitHub/elemer_app/img/splash.png", "."),
-    ],
+    datas=[('templates/MainWindowTemplate.ui', 'templates/'), ('templates/MultiOperatorTemplate.ui', 'templates/'), ('templates/PasteSerialNumbersTemplate.ui', 'templates/'), ('templates/SelectEnterTypeTemplate.ui', 'templates/'), ('img/splash.png', 'img'), ('backgrounds/img.png', 'backgrounds')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -47,11 +41,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='img/icon.png',
-)
-app = BUNDLE(
-    exe,
-    name='main.app',
-    icon='img/icon.png',
-    bundle_identifier=None,
+    icon='img\\icon_3.ico',
 )
