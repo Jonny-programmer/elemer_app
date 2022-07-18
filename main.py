@@ -33,7 +33,10 @@ def update_operator_num(order_num, cur, conn):
 
 
 def reset_operator_num(order_num, cur, conn):
+    # Пока не используется, можно с его помощью сбросить прогресс всех операторов
     cur.execute("""UPDATE control_table SET operators_quant=0 WHERE order_num=?""", (order_num,))
+    call_string = str(f"DROP TABLE order_{order_num}")
+    cur.execute(call_string)
     conn.commit()
 
 
@@ -297,6 +300,13 @@ class EnterSNListWindow(QMainWindow):
                                 WHERE id = (SELECT id FROM order_{self.order_num} WHERE operator_{int(real_operator_num) - 1} = {elem})""")
                                 self.local_cur.execute(call_string)
                                 self.local_con.commit()
+                            for elem in curr_op_list - prev_op_list:
+                                if elem:
+                                    call_string = str(f"INSERT INTO order_{self.order_num}({op_column_name}) VALUES (\'{elem}\')")
+                                    self.local_cur.execute(call_string)
+                                    self.local_con.commit()
+
+                            # сообщения, если что-либо пошло не так
                             if (prev_op_list - curr_op_list) and (curr_op_list - prev_op_list):
                                 msg = QMessageBox()
                                 msg.setIcon(QMessageBox.Warning)
@@ -489,6 +499,7 @@ class EnterSNListWindow(QMainWindow):
 
     def delete_all(self):
         self.SN_LIST = []
+        global SN_LIST
         SN_LIST = []
         pixmap = QPixmap(resource_path("img/splash.png"))
         splash = QSplashScreen(pixmap)
