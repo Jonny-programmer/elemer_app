@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 136, in <lambda>
+    self.opt_3_btn.clicked.connect(lambda: self.move_on("opt_by_himself"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 149, in __init__
+    self.local_con, self.local_cur = get_cursor(self.local_db_path)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 69, in get_cursor
+    con = sqlite3.connect(db_filename, uri=True)
+sqlite3.OperationalError: unable to open database file
