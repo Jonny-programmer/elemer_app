@@ -1,4 +1,257 @@
 Traceback (most recent call last):
-  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 537, in <module>
-    sys.exit(app.exec_())
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 132, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 138, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 148, in __init__
+    modify_local_db(self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 46, in modify_local_db
+    cur.execute("""CREATE TABLE IF NOT EXISTS control_table(
+sqlite3.OperationalError: AUTOINCREMENT is only allowed on an INTEGER PRIMARY KEY
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 130, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 136, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 146, in __init__
+    modify_local_db(self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 50, in modify_local_db
+    cur.execute("""CREATE TABLE IF NOT EXISTS ?(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)""")
+sqlite3.OperationalError: near "?": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 130, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 136, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 154, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 251, in setup_UI
+    modify_local_db(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 50, in modify_local_db
+    cur.execute("""CREATE TABLE IF NOT EXISTS ?(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)""", (order_num,))
+sqlite3.OperationalError: near "?": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 252, in setup_UI
+    modify_local_db(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 51, in modify_local_db
+    cur.execute(call_string)
+sqlite3.OperationalError: near "424": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 252, in setup_UI
+    modify_local_db(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 51, in modify_local_db
+    cur.execute(call_string)
+sqlite3.OperationalError: unrecognized token: "1_table"
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 24, in update_operator_num
+    table_op_quant = cur.execute("""SELECT operators_quant FROM control_table WHERE order_num=?""", (order_num,)).fetchone()[0]
+TypeError: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 132, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 138, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 156, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 254, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 32, in update_operator_num
+    cur.execute("""ALTER TABLE control_table ADD ? VARCHAR(20) INDEX NOT NULL""", (str(f"operator_{table_op_quant}"),))
+sqlite3.OperationalError: near "?": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 136, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 142, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 160, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 258, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 36, in update_operator_num
+    cur.execute("""ALTER TABLE control_table ADD ? VARCHAR(20) INDEX NOT NULL""", (str(f"operator_{table_op_quant}"),))
+sqlite3.OperationalError: near "?": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 31, in update_operator_num
+    cur.execute(call_string)
+sqlite3.OperationalError: near "INDEX": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 31, in update_operator_num
+    cur.execute(call_string)
+sqlite3.OperationalError: Cannot add a UNIQUE column
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 31, in update_operator_num
+    cur.execute(call_string)
+sqlite3.OperationalError: Cannot add a NOT NULL column with default value NULL
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 261, in setup_UI
+    self.dialog.comment_label.setText(f"Оператор номер {get_operator_num(self.order_num, self.local_cur, self.local_con)}")
+AttributeError: 'QDialog' object has no attribute 'comment_label'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 28, in update_operator_num
+    cur.execute("""UPDATE control_table SET operators_quant=? WHERE order_num=?""", (table_op_quant, order_num,))
+sqlite3.InterfaceError: Error binding parameter 0 - probably unsupported type.
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 131, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 137, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 155, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 253, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 28, in update_operator_num
+    cur.execute("""UPDATE control_table SET operators_quant=? WHERE order_num=?""", (int(table_op_quant), order_num,))
+TypeError: int() argument must be a string, a bytes-like object or a number, not 'tuple'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 272, in setup_UI
+    self.local_cur.execute("INSERT INTO ?(?) VALUE (?)", ('table_' + str(self.order_num),
+sqlite3.OperationalError: near "?": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 255, in setup_UI
+    update_operator_num(self.order_num, self.local_cur, self.local_con)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 33, in update_operator_num
+    cur.execute(call_string)
+sqlite3.OperationalError: duplicate column name: operator_1
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 273, in setup_UI
+    self.local_cur.execute(call_string)
+sqlite3.OperationalError: near "VALUE": syntax error
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 273, in setup_UI
+    self.local_cur.execute(call_string)
+sqlite3.OperationalError: no such column: WRMFR
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 274, in setup_UI
+    self.local_cur.execute(call_string)
+sqlite3.OperationalError: no such column: RWNV
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 285, in setup_UI
+    if elem not in self.added:
+AttributeError: 'EnterSNListWindow' object has no attribute 'added'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 249, in setup_UI
+    order_num = QInputDialog.getInt(self, "", "Введите номер заказа",
+TypeError: getInt(QWidget, str, str, value: int = 0, min: int = -2147483647, max: int = 2147483647, step: int = 1, flags: Union[Qt.WindowFlags, Qt.WindowType] = Qt.WindowFlags()): argument 8 has unexpected type 'bool'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 133, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 139, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 157, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 249, in setup_UI
+    order_num = QInputDialog.getInt(self, "", "Введите номер заказа",
+TypeError: getInt(QWidget, str, str, value: int = 0, min: int = -2147483647, max: int = 2147483647, step: int = 1, flags: Union[Qt.WindowFlags, Qt.WindowType] = Qt.WindowFlags()): argument 8 has unexpected type 'bool'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 124, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 130, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 148, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 275, in setup_UI
+    prev_op_list = self.local_cur.execute(call_string).fetchall()
+sqlite3.OperationalError: no such column: operator_8
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 469, in return_back
 KeyboardInterrupt
