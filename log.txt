@@ -242,3 +242,16 @@ Traceback (most recent call last):
   File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 249, in setup_UI
     order_num = QInputDialog.getInt(self, "", "Введите номер заказа",
 TypeError: getInt(QWidget, str, str, value: int = 0, min: int = -2147483647, max: int = 2147483647, step: int = 1, flags: Union[Qt.WindowFlags, Qt.WindowType] = Qt.WindowFlags()): argument 8 has unexpected type 'bool'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 124, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 130, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 148, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 275, in setup_UI
+    prev_op_list = self.local_cur.execute(call_string).fetchall()
+sqlite3.OperationalError: no such column: operator_8
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 469, in return_back
+KeyboardInterrupt

@@ -14,8 +14,6 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QPalette, QBrush, QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtWidgets import *
 
-from templates.MainWindowTemplate import Ui_MainWindow
-
 SN_LIST = []
 # Следующие методы нужны для взаимодействия с локальной БД - реализация мультиоператорного ввода
 
@@ -29,7 +27,7 @@ def update_operator_num(order_num, cur, conn):
         table_op_quant = table_op_quant[0] + 1
     cur.execute("""UPDATE control_table SET operators_quant=? WHERE order_num=?""", (table_op_quant, order_num,))
     conn.commit()
-    call_string = str(f"ALTER TABLE table_{order_num} ADD operator_{table_op_quant} VARCHAR(20)")
+    call_string = str(f"ALTER TABLE order_{order_num} ADD operator_{table_op_quant} VARCHAR(20)")
     cur.execute(call_string)
     conn.commit()
 
@@ -49,9 +47,18 @@ def modify_local_db(order_num, cur, con):
                                                             order_num TEXT NOT NULL,
                                                             operators_quant INTEGER DEFAULT 0 NOT NULL)""")
     con.commit()
-    call_string = str(f"CREATE TABLE IF NOT EXISTS {'table_'+ str(order_num)}(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)")
+    call_string = str(f"CREATE TABLE IF NOT EXISTS order_{order_num}(id INTEGER PRIMARY KEY AUTOINCREMENT "
+                      f"NOT NULL)")
     cur.execute(call_string)
     con.commit()
+
+
+def clean(op_list: list):
+    res = []
+    for elem in op_list:
+        if elem:
+            res.append(elem)
+    return res
 
 
 def get_cursor(db_filename):
@@ -59,15 +66,6 @@ def get_cursor(db_filename):
     con = sqlite3.connect(db_filename, uri=True)
     cur = con.cursor()
     return con, cur
-
-
-def length(a: list):
-    # Служебный метод для определения длины списка, исключая пустые элементы
-    list_length: int = 0
-    for elem in a:
-        if elem:
-            list_length += 1
-    return list_length
 
 
 def open_file(path):
@@ -162,10 +160,10 @@ class EnterSNListWindow(QMainWindow):
         self.setFixedSize(700, 600)
         # self.resize(700, 600)
         # Загрузка интерфейса
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
-        # """ uic.loadUi(resource_path("templates/MainWindowTemplate.ui"), self)"""
-        self.setCentralWidget(self.ui.gridWidget)
+        # self.ui = Ui_MainWindow()
+        # self.setupUi(self)
+        uic.loadUi(resource_path("templates/MainWindowTemplate.ui"), self)
+        self.setCentralWidget(self.gridWidget)
         # Установка фона
         palette = QPalette()
         palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
@@ -173,11 +171,12 @@ class EnterSNListWindow(QMainWindow):
 
         self.modify_table()
         # Подключение кнопок
-        self.ui.save_btn.clicked.connect(self.save_table)
-        self.ui.return_home_btn.clicked.connect(self.return_back)
-        self.ui.delete_all_btn.clicked.connect(self.delete_all)
-        self.ui.code_scanned_btn.clicked.connect(self.code_scanned)
-        self.ui.add_data_btn.clicked.connect(self.add_data)
+        self.save_btn.clicked.connect(self.save_table)
+        self.return_home_btn.clicked.connect(self.return_back)
+        self.delete_all_btn.clicked.connect(self.delete_all)
+        self.code_scanned_btn.clicked.connect(self.code_scanned)
+        self.add_data_btn.clicked.connect(self.add_data)
+        self.export_local_db_button.clicked.connect(self.export_local_db)
         # Options
         self.added = []
         for elem in self.SN_LIST:
@@ -237,7 +236,6 @@ class EnterSNListWindow(QMainWindow):
                     if not clear_line.isdigit():
                         if "производство" in clear_line.lower():
                             self.order_num = clear_line.split()[4]
-                            print("----<>-----", self.order_num)
                     else:
                         number = clear_line
                         if number != '' and number not in self.SN_LIST:
@@ -248,7 +246,6 @@ class EnterSNListWindow(QMainWindow):
             ok_pressed = bool()
             order_num, ok_pressed = QInputDialog.getInt(self, "", "Введите номер заказа",
                                             self.last_order_num, 1, 40000, 1)
-            print("---> ok_pressed is now", ok_pressed)
             if not ok_pressed:
                 self.return_back()
             else:
@@ -260,8 +257,8 @@ class EnterSNListWindow(QMainWindow):
                 real_operator_num = get_operator_num(self.order_num, self.local_cur, self.local_con)
                 self.dialog = QDialog(self)
                 uic.loadUi(resource_path("templates/MultiOperatorTemplate.ui"), self.dialog)
-                text = "Введите, пожалуйста, список серийных номеров, разделенных переносом строки." \
-                       "Вы можете использовать для этого сканер штрих-кодов."
+                text = "Введите,  пожалуйста,  список серийных номеров,  разделенных \nпереносом строки." \
+                       "Вы можете использовать для этого\nсканер штрих-кодов."
                 self.dialog.label.setText(text)
                 self.dialog.comment_label.setText(f"Оператор номер {get_operator_num(self.order_num, self.local_cur, self.local_con)}")
                 if self.dialog.exec():
@@ -272,14 +269,72 @@ class EnterSNListWindow(QMainWindow):
                         for line in text.split("\n"):
                             number = line.strip()
                             if number and number not in self.SN_LIST:
-                                call_string = str(f"INSERT INTO table_{self.order_num}({op_column_name}) VALUES (\'{number}\')")
-                                print(call_string)
+                                call_string = str(f"INSERT INTO order_{self.order_num}({op_column_name}) VALUES (\'{number}\')")
                                 self.local_cur.execute(call_string)
                                 self.local_con.commit()
                                 # Добавить в локальный список
                                 self.SN_LIST.append(number)
                     else:
-                        pass
+                        self.local_con.commit()
+                        call_string = str(f"SELECT operator_{int(real_operator_num) - 1} FROM order_{self.order_num}")
+                        prev_op_list = clean([_[0] for _ in self.local_cur.execute(call_string).fetchall()])
+                        print("PREV op:", prev_op_list)
+                        curr_op_list = []
+                        # Получаем текст
+                        text = self.dialog.textEdit.toPlainText()
+                        for line in text.split("\n"):
+                            number = line.strip()
+                            if number and number not in curr_op_list:
+                                curr_op_list.append(number)
+                        print("CURR op:", curr_op_list)
+
+                        prev_op_list, curr_op_list = set(prev_op_list), set(curr_op_list)
+                        if prev_op_list & curr_op_list:
+                            for elem in prev_op_list & curr_op_list:
+                                self.SN_LIST.append(elem)
+                                # Найти в первой колонке
+                                call_string = str(f"""UPDATE order_{self.order_num} SET operator_{real_operator_num} = {elem}
+                                WHERE id = (SELECT id FROM order_{self.order_num} WHERE operator_{int(real_operator_num) - 1} = {elem})""")
+                                self.local_cur.execute(call_string)
+                                self.local_con.commit()
+                            if (prev_op_list - curr_op_list) and (curr_op_list - prev_op_list):
+                                msg = QMessageBox()
+                                msg.setIcon(QMessageBox.Warning)
+                                msg.setWindowModality(Qt.ApplicationModal)
+                                msg.setText("Warning!")
+                                msg.setInformativeText(f'Предыдущий оператор добавил номера,  которые были не найдены '
+                                                       f'у вас: {list(prev_op_list - curr_op_list)},  а вы добавили '
+                                                       f'номера,  не обнаруженные у предыдущего оператора: '
+                                                       f'{list(curr_op_list - prev_op_list)}')
+                                msg.setWindowTitle("Warning")
+                                msg.exec_()
+                            elif prev_op_list - curr_op_list:
+                                msg = QMessageBox()
+                                msg.setIcon(QMessageBox.Warning)
+                                msg.setWindowModality(Qt.ApplicationModal)
+                                msg.setText("Warning!")
+                                msg.setInformativeText(f'Предыдущий оператор добавил номера, которые были не найдены '
+                                                       f'у вас: {list(prev_op_list - curr_op_list)}')
+                                msg.setWindowTitle("Warning")
+                                msg.exec_()
+                            elif curr_op_list - prev_op_list:
+                                msg = QMessageBox()
+                                msg.setIcon(QMessageBox.Warning)
+                                msg.setWindowModality(Qt.ApplicationModal)
+                                msg.setText("Warning!")
+                                msg.setInformativeText(f'Вы добавили '
+                                                       f'номера, не обнаруженные у предыдущего оператора: '
+                                                       f'{list(curr_op_list - prev_op_list)}')
+                                msg.setWindowTitle("Warning")
+                                msg.exec_()
+                        else:
+                            msg = QMessageBox()
+                            msg.setIcon(QMessageBox.Warning)
+                            msg.setWindowModality(Qt.ApplicationModal)
+                            msg.setText("Warning!")
+                            msg.setInformativeText('У вас не совпало ни одного номера с предыдущим оператором!')
+                            msg.setWindowTitle("Warning")
+                            msg.exec_()
                 else:
                     self.return_back()
 
@@ -294,13 +349,47 @@ class EnterSNListWindow(QMainWindow):
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         if event.key() == Qt.Key_Return:
-            code = self.ui.scan_field.text().strip()
+            code = self.scan_field.text().strip()
             if code != "":
                 self.code_scanned()
 
+    def export_local_db(self):
+        try:
+            csv_path_file = open(resource_path("data_files/order_data_csv_path.txt"), "r")
+        except FileNotFoundError:
+            csv_path_file = open(resource_path("data_files/order_data_csv_path.txt"), "w")
+            csv_path_file.write("/")
+            self.csv_path = "/"
+            csv_path_file.close()
+        finally:
+            self.csv_path = open(resource_path("data_files/order_data_csv_path.txt"), "r").readlines()[0].strip()
+
+        filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
+                                                            self.csv_path.rsplit("/", maxsplit=1)[
+                                                                0] + "/" + f"order_{self.order_num}_data.csv",
+                                                            "*.csv")
+        while not ok3_pressed:
+            filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
+                                                                self.csv_path.rsplit("/", maxsplit=1)[
+                                                                    0] + "/" + f"order_{self.order_num}_data.csv",
+                                                                "*.csv")
+        call_string = str(f"SELECT * FROM order_{self.order_num}")
+        data = self.local_cur.execute(call_string).fetchall()
+        with open(filename, "w") as outf:
+            writer = csv.writer(outf, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerows(data)
+        with open(resource_path("data_files/order_data_csv_path.txt"), "w") as path_file:
+            path_file.write(filename)
+        try:
+            open_file(filename.rsplit("/", maxsplit=1)[0])
+            # open_file(filename)
+            # subprocess.call(["open", filename.rsplit("/", maxsplit=1)[0]])
+        except Exception as e:
+            print("Unexpected exception:", e)
+
     def code_scanned(self):
-        self.ui.add_data_btn.hide()
-        code = self.ui.scan_field.text().strip()
+        self.add_data_btn.hide()
+        code = self.scan_field.text().strip()
         if code != "":
             table_code = self.model.findItems(code, flags=Qt.MatchExactly, column=0)
             if not table_code:
@@ -334,7 +423,7 @@ class EnterSNListWindow(QMainWindow):
                 # Засовываем в таблицу
                 self.model.setItem(item.row(), 1, new_item)
                 self.model.setItem(item.row(), 2, code_found)
-            self.ui.scan_field.clear()
+            self.scan_field.clear()
 
     def save_table(self):
         try:
@@ -411,24 +500,22 @@ class EnterSNListWindow(QMainWindow):
 
     def modify_table(self):
         self.model = QStandardItemModel()
-        self.ui.tableView.setModel(self.model)
+        self.tableView.setModel(self.model)
         self.model.setHorizontalHeaderLabels(["number", "confirmation", "status"])
         # Горизонтальная метка расширяет остальную часть окна и заполняет форму
-        self.ui.tableView.horizontalHeader().setStretchLastSection(True)
+        self.tableView.horizontalHeader().setStretchLastSection(True)
         # Горизонтальное направление, размер таблицы увеличивается до соответствующего размера
-        self.ui.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         # Кисти
         self.okay_brush = QBrush(QColor(0, 255, 127, 150))
         self.was_not_here_brush = QBrush(QColor(0, 100, 0, 180))
 
     def return_back(self):
         self.order_num = 0
-        print("Returning back!")
         if self.dialog:
             self.dialog.close()
         self.close()
         self.next = SelectEnterType()
-
 
 
 if __name__ == '__main__':
