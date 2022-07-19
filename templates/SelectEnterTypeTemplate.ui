@@ -19,7 +19,7 @@
   <property name="font">
    <font>
     <family>Times New Roman</family>
-    <pointsize>24</pointsize>
+    <pointsize>14</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,11 @@
    <string>Приложение для контроля серийных номеров приборов предприятия &quot;Элемер&quot;</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <widget class="QWidget" name="gridWidget" native="true">
     <property name="geometry">
      <rect>
@@ -44,6 +49,11 @@
       <height>600</height>
      </size>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <layout class="QGridLayout" name="gridLayout">
      <item row="3" column="0">
       <widget class="QPushButton" name="opt_3_btn">
@@ -55,13 +65,12 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>500</width>
+         <width>540</width>
          <height>16777215</height>
         </size>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
          <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
@@ -75,7 +84,7 @@ border-radius: 15px; color: #EE82EE		;
 background-color: #fff;</string>
        </property>
        <property name="text">
-        <string>Скопировать вручную</string>
+        <string>Скопировать вручную (лист из 1С)</string>
        </property>
       </widget>
      </item>
@@ -106,13 +115,13 @@ background-color: #fff;</string>
       <widget class="QPushButton" name="opt_2_btn">
        <property name="minimumSize">
         <size>
-         <width>400</width>
+         <width>540</width>
          <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>500</width>
+         <width>540</width>
          <height>16777215</height>
         </size>
        </property>
@@ -145,13 +154,13 @@ background-color: #fff;</string>
        </property>
        <property name="minimumSize">
         <size>
-         <width>400</width>
+         <width>540</width>
          <height>40</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
-         <width>500</width>
+         <width>540</width>
          <height>16777215</height>
         </size>
        </property>

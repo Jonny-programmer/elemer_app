@@ -1,0 +1,9 @@
+pyinstaller --noconsole --clean --windowed --onefile --icon img\icon_3.ico ^
+--add-data "templates\MainWindowTemplate.ui;templates" ^
+--add-data "templates\MultiOperatorTemplate.ui;templates" ^
+--add-data "templates\PasteSerialNumbersTemplate.ui;templates" ^
+--add-data "templates\SelectEnterTypeTemplate.ui;templates" ^
+--add-data "img\splash.png;img" ^
+--add-data "backgrounds\img.png;backgrounds" ^
+--add-data "data_files\;data_files" ^
+main.py
