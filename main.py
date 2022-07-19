@@ -192,6 +192,7 @@ class EnterSNListWindow(QMainWindow):
 
         # Изучаем возможные способы ввода данных
         if enter_type == "opt_db":
+            self.export_local_db_button.hide()
             try:
                 db_path_file = open(resource_path("data_files/db_path.txt"), "r")
             except FileNotFoundError:
@@ -230,6 +231,7 @@ class EnterSNListWindow(QMainWindow):
                     FROM TableOrder WHERE OrdKey=?""", (order_num,)).fetchall()
                 self.order_num = order_num
         elif enter_type == "opt_by_himself":
+            self.export_local_db_button.hide()
             self.dialog = QDialog(self)
             uic.loadUi(resource_path("templates/PasteSerialNumbersTemplate.ui"), self.dialog)
             if self.dialog.exec():
@@ -246,7 +248,7 @@ class EnterSNListWindow(QMainWindow):
             else:
                 self.return_back()
         elif enter_type == "opt_multiple":
-            ok_pressed = bool()
+            # Добываем номер заказа
             order_num, ok_pressed = QInputDialog.getInt(self, "", "Введите номер заказа",
                                             self.last_order_num, 1, 40000, 1)
             if not ok_pressed:

@@ -2,3 +2,49 @@ Traceback (most recent call last):
   File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 537, in <module>
     sys.exit(app.exec_())
 KeyboardInterrupt
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 134, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 149, in __init__
+    print(self.local_db_path, filename="/Users/eremin/Downloads/elemer_app/dist/ALOG.txt")
+TypeError: 'filename' is an invalid keyword argument for print()
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 134, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 149, in __init__
+    print(self.local_db_path, file="/Users/eremin/Downloads/elemer_app/dist/ALOG.txt")
+AttributeError: 'str' object has no attribute 'write'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 134, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 149, in __init__
+    self.local_con, self.local_cur = get_cursor(self.local_db_path)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 69, in get_cursor
+    con = sqlite3.connect(db_filename, uri=True)
+sqlite3.OperationalError: unable to open database file
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 134, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 158, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 182, in setup_UI
+    self.export_local_db_button.clicked.connect(self.export_local_db)
+AttributeError: 'EnterSNListWindow' object has no attribute 'export_local_db_button'
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 134, in <lambda>
+    self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 140, in move_on
+    self.next = EnterSNListWindow(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 158, in __init__
+    self.setup_UI(enter_type)
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 285, in setup_UI
+    prev_op_list = clean([_[0] for _ in self.local_cur.execute(call_string).fetchall()])
+sqlite3.OperationalError: no such column: operator_4
