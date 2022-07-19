@@ -248,6 +248,7 @@ class EnterSNListWindow(QMainWindow):
             else:
                 self.return_back()
         elif enter_type == "opt_multiple":
+            self.add_data_btn.hide()
             # Добываем номер заказа
             order_num, ok_pressed = QInputDialog.getInt(self, "", "Введите номер заказа",
                                             self.last_order_num, 1, 40000, 1)
@@ -380,11 +381,8 @@ class EnterSNListWindow(QMainWindow):
                                                             self.csv_path.rsplit("/", maxsplit=1)[
                                                                 0] + "/" + f"order_{self.order_num}_data.csv",
                                                             "*.csv")
-        while not ok3_pressed:
-            filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
-                                                                self.csv_path.rsplit("/", maxsplit=1)[
-                                                                    0] + "/" + f"order_{self.order_num}_data.csv",
-                                                                "*.csv")
+        if not ok3_pressed:
+            return
         call_string = str(f"SELECT * FROM order_{self.order_num}")
         data = self.local_cur.execute(call_string).fetchall()
         with open(filename, "w") as outf:
@@ -450,16 +448,11 @@ class EnterSNListWindow(QMainWindow):
 
         filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
                                                             self.csv_path.rsplit("/", maxsplit=1)[
-                                                                0] + "/" + time.strftime(
-                                                                "%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
+                                                                0] + "/order_" + str(self.order_num) + time.strftime(
+                                                                "_%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
                                                             "*.csv")
-        while not ok3_pressed:
-            filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
-                                                                self.csv_path.rsplit("/", maxsplit=1)[
-                                                                    0] + "/" + time.strftime(
-                                                                    "%Y-%m-%d_%H-%M-%S", time.localtime()) + ".csv",
-                                                                "*.csv")
-
+        if not ok3_pressed:
+            return
         with open(filename, "w") as outf:
             writer = csv.writer(outf, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(["number", "confirmation", "status"])
