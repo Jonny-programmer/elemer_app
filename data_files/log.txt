@@ -1,0 +1,6 @@
+('templates/SelectEnterTypeTemplate.ui',)
+{}
+templates/SelectEnterTypeTemplate.ui
+('backgrounds/img.png',)
+{}
+backgrounds/img.png

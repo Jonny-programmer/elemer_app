@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/eremin/Documents/GitHub/elemer_app/main.py", line 537, in <module>
+    sys.exit(app.exec_())
+KeyboardInterrupt
