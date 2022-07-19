@@ -105,7 +105,7 @@ def dbg(filename):
     return decorator
 
 
-@dbg(r"data_files/log.txt")
+@dbg(r"/Users/eremin/Desktop/log.txt")
 def resource_path(relative):
     # Чтобы программа всегда могла найти путь к файлам
     if hasattr(sys, "_MEIPASS"):

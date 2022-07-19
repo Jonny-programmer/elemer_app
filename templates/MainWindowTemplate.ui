@@ -105,6 +105,7 @@
           <widget class="QPushButton" name="return_home_btn">
            <property name="font">
             <font>
+             <pointsize>11</pointsize>
              <underline>true</underline>
             </font>
            </property>
@@ -136,8 +137,15 @@ color: rgb(10, 87, 182);
          </item>
          <item>
           <widget class="QPushButton" name="add_data_btn">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
            <property name="font">
             <font>
+             <pointsize>12</pointsize>
              <weight>75</weight>
              <bold>true</bold>
              <underline>true</underline>
@@ -164,8 +172,14 @@ font-weight: bold;
              <property name="font">
               <font>
                <family>Times New Roman</family>
-               <pointsize>14</pointsize>
+               <pointsize>13</pointsize>
               </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border: 1.5px solid #0AA3CF;
+border-radius: 5px;
+color: #0AA3CF;
+background: white;</string>
              </property>
              <property name="text">
               <string>Удалить все</string>
@@ -177,8 +191,14 @@ font-weight: bold;
              <property name="font">
               <font>
                <family>Times New Roman</family>
-               <pointsize>14</pointsize>
+               <pointsize>13</pointsize>
               </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border: 1.5px solid #0AA3CF;
+border-radius: 5px;
+color: #0AA3CF;
+background: white;</string>
              </property>
              <property name="text">
               <string>Сохранить</string>
@@ -633,7 +653,7 @@ font-weight: bold;
              <property name="font">
               <font>
                <family>Times New Roman</family>
-               <pointsize>17</pointsize>
+               <pointsize>16</pointsize>
               </font>
              </property>
              <property name="text">
@@ -643,9 +663,14 @@ font-weight: bold;
            </item>
            <item>
             <widget class="QLineEdit" name="scan_field">
+             <property name="font">
+              <font>
+               <pointsize>17</pointsize>
+              </font>
+             </property>
              <property name="styleSheet">
               <string notr="true">border: 1px solid violet;
-border-radius: 3px;</string>
+border-radius: 5px;</string>
              </property>
             </widget>
            </item>
@@ -674,6 +699,11 @@ border-radius: 3px;</string>
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <pointsize>-1</pointsize>
+                </font>
                </property>
                <property name="styleSheet">
                 <string notr="true">color: orange;
@@ -1110,6 +1140,24 @@ font-size: 15px;</string>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="export_local_db_button">
+             <property name="font">
+              <font>
+               <pointsize>12</pointsize>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">border: 2px solid rgb(170, 85, 255);
+border-radius: 4px;
+background: rgb(255, 255, 213);
+</string>
+             </property>
+             <property name="text">
+              <string>Экспортировать локальную БД ➦</string>
              </property>
             </widget>
            </item>
