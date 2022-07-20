@@ -121,7 +121,7 @@ def dbg(filename):
     return decorator
 
 
-@dbg(r"/Users/eremin/Desktop/log.txt")
+@dbg(r"/Users/eremin/Downloads/log.txt")
 def resource_path(relative):
     # Чтобы программа всегда могла найти путь к файлам
     if hasattr(sys, "_MEIPASS"):
@@ -216,14 +216,14 @@ class EnterSNListWindow(QMainWindow):
         if enter_type == "opt_db":
             self.export_local_db_button.hide()
             try:
-                db_path_file = open(resource_path("data_files/db_path.txt"), "r")
+                db_path_file = open(resource_path("data_files\\db_path.txt"), "r")
             except FileNotFoundError:
-                db_path_file = open(resource_path("data_files/db_path.txt"), "w")
+                db_path_file = open(resource_path("data_files\\db_path.txt"), "w")
                 db_path_file.write("/")
                 self.db_path = "/"
                 db_path_file.close()
             finally:
-                self.db_path = open(resource_path("data_files/db_path.txt"), "r").readlines()[0].strip()
+                self.db_path = open(resource_path("data_files\\db_path.txt"), "r").readlines()[0].strip()
 
             db_filename, ok_pressed = QFileDialog.getOpenFileName(self,
                                                                   "Select database file",
@@ -232,7 +232,7 @@ class EnterSNListWindow(QMainWindow):
             if not ok_pressed:
                 self.return_back()
             else:
-                with open(resource_path("data_files/db_path.txt"), "w") as path_file:
+                with open(resource_path("data_files\\db_path.txt"), "w") as path_file:
                     path_file.write(db_filename)
                 # Подключение к базе данных
                 _, cur = get_cursor(db_filename)
@@ -390,14 +390,14 @@ class EnterSNListWindow(QMainWindow):
 
     def export_local_db(self):
         try:
-            csv_path_file = open(resource_path("data_files/order_data_csv_path.txt"), "r")
+            csv_path_file = open(resource_path("data_files\\order_data_csv_path.txt"), "r")
         except FileNotFoundError:
-            csv_path_file = open(resource_path("data_files/order_data_csv_path.txt"), "w")
+            csv_path_file = open(resource_path("data_files\\order_data_csv_path.txt"), "w")
             csv_path_file.write("/")
             self.csv_path = "/"
             csv_path_file.close()
         finally:
-            self.csv_path = open(resource_path("data_files/order_data_csv_path.txt"), "r").readlines()[0].strip()
+            self.csv_path = open(resource_path("data_files\\order_data_csv_path.txt"), "r").readlines()[0].strip()
 
         filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
                                                             self.csv_path.rsplit("/", maxsplit=1)[
@@ -410,7 +410,7 @@ class EnterSNListWindow(QMainWindow):
         with open(filename, "w") as outf:
             writer = csv.writer(outf, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerows(data)
-        with open(resource_path("data_files/order_data_csv_path.txt"), "w") as path_file:
+        with open(resource_path("data_files\\order_data_csv_path.txt"), "w") as path_file:
             path_file.write(filename)
         try:
             open_file(filename.rsplit("/", maxsplit=1)[0])
@@ -477,14 +477,14 @@ class EnterSNListWindow(QMainWindow):
 
     def save_table(self):
         try:
-            csv_path_file = open(resource_path("data_files/csv_path.txt"), "r")
+            csv_path_file = open(resource_path("data_files\\csv_path.txt"), "r")
         except FileNotFoundError:
-            csv_path_file = open(resource_path("data_files/csv_path.txt"), "w")
+            csv_path_file = open(resource_path("data_files\\csv_path.txt"), "w")
             csv_path_file.write("/")
             self.csv_path = "/"
             csv_path_file.close()
         finally:
-            self.csv_path = open(resource_path("data_files/csv_path.txt"), "r").readlines()[0].strip()
+            self.csv_path = open(resource_path("data_files\\csv_path.txt"), "r").readlines()[0].strip()
 
         filename, ok3_pressed = QFileDialog.getSaveFileName(self, "Select where to save a .csv file",
                                                             self.csv_path.rsplit("/", maxsplit=1)[
@@ -501,7 +501,7 @@ class EnterSNListWindow(QMainWindow):
                                  self.model.item(row, 1).text(),
                                  self.model.item(row, 2).text(),
                                  ])
-        with open(resource_path("data_files/csv_path.txt"), "w") as path_file:
+        with open(resource_path("data_files\\csv_path.txt"), "w") as path_file:
             path_file.write(filename)
         try:
             open_file(filename.rsplit("/", maxsplit=1)[0])
@@ -513,11 +513,11 @@ class EnterSNListWindow(QMainWindow):
 
     def find_local_db_path(self):
         try:
-            local_db_path_file = open(resource_path("data_files/local_db_path.txt"), "r")
+            local_db_path_file = open(resource_path("data_files\\local_db_path.txt"), "r")
             print("Opening local db path file:", local_db_path_file.readlines())
         except FileNotFoundError:
             print("We found an exception!!! FileNotFoundError!!!")
-            local_db_path_file = open(resource_path("data_files/local_db_path.txt"), "w")
+            local_db_path_file = open(resource_path("data_files\\local_db_path.txt"), "w")
             local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self, "Select where to save a local database",
                                                                      "/local_database.db", "*.db")
             while not ok4_pressed:
@@ -528,7 +528,7 @@ class EnterSNListWindow(QMainWindow):
             local_db_path_file.close()
             print("Wrote all of those 'path' into file")
         finally:
-            local_db_path = open(resource_path("data_files/local_db_path.txt"), "r").readlines()[0].strip()
+            local_db_path = open(resource_path("data_files\\local_db_path.txt"), "r").readlines()[0].strip()
             print(local_db_path)
         return local_db_path
 
