@@ -215,9 +215,9 @@ class EnterSNListWindow(QMainWindow):
             self.export_local_db_button.hide()
             if os.path.isfile(resource_path("data_files\\db_path.txt")):
                 with open(resource_path("data_files\\db_path.txt"), "r") as file:
-                    self.db_path = file.readlines()[0].strip()
+                    self.db_path = file.readlines()[-1].strip()
             else:
-                with open(resource_path("data_files\\db_path.txt"), "w") as db_path_file:
+                with open(resource_path("data_files\\db_path.txt"), "a") as db_path_file:
                     db_path_file.write("/")
                     self.db_path = "/"
 
@@ -387,9 +387,9 @@ class EnterSNListWindow(QMainWindow):
     def export_local_db(self):
         if os.path.isfile(resource_path("data_files\\order_data_csv_path.txt")):
             with open(resource_path("data_files\\order_data_csv_path.txt"), "r") as file:
-                self.csv_path = file.readlines()[0].strip()
+                self.csv_path = file.readlines()[-1].strip()
         else:
-            with open(resource_path("data_files\\order_data_csv_path.txt"), "w") as csv_path_file:
+            with open(resource_path("data_files\\order_data_csv_path.txt"), "a") as csv_path_file:
                 csv_path_file.write("/")
                 self.csv_path = "/"
 
@@ -472,9 +472,9 @@ class EnterSNListWindow(QMainWindow):
     def save_table(self):
         if os.path.isfile(resource_path("data_files\\csv_path.csv")):
             with open(resource_path("data_files\\csv_path.txt"), "r") as file:
-                self.csv_path = file.readlines()[0].strip()
+                self.csv_path = file.readlines()[-1].strip()
         else:
-            with open(resource_path("data_files\\csv_path.txt"), "w") as csv_path_file:
+            with open(resource_path("data_files\\csv_path.txt"), "a") as csv_path_file:
                 csv_path_file.write("/")
                 self.csv_path = "/"
 
@@ -506,9 +506,9 @@ class EnterSNListWindow(QMainWindow):
     def find_local_db_path(self):
         if os.path.isfile(resource_path("data_files\local_db_path.txt")):
             with open(resource_path("data_files\local_db_path.txt"), "r") as file:
-                local_db_path = file.readlines()[0].strip()
+                local_db_path = file.readlines()[-1].strip()
         else:
-            with open(resource_path("data_files\local_db_path.txt"), "w") as local_db_path_file:
+            with open(resource_path("data_files\local_db_path.txt"), "a") as local_db_path_file:
                 local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self, "Select where to save a local database",
                                                                          "/local_database.db", "*.db")
                 while not ok4_pressed:
