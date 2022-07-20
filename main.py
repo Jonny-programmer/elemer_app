@@ -183,7 +183,7 @@ class EnterSNListWindow(QMainWindow):
         self.setCentralWidget(self.gridWidget)
         # Установка фона
         palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/vector_5.png"))))
         self.setPalette(palette)
 
         self.modify_table()
