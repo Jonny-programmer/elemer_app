@@ -142,7 +142,7 @@ class SelectEnterType(QMainWindow):
         self.setCentralWidget(self.gridWidget)
         # Установка фона
         palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/vector_5.png"))))
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
         self.setPalette(palette)
 
         self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
@@ -183,7 +183,7 @@ class EnterSNListWindow(QMainWindow):
         self.setCentralWidget(self.gridWidget)
         # Установка фона
         palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/vector_5.png"))))
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
         self.setPalette(palette)
 
         self.modify_table()
