@@ -513,10 +513,9 @@ class EnterSNListWindow(QMainWindow):
 
     def find_local_db_path(self):
         try:
+            print(resource_path("data_files\\local_db_path.txt"), file=open("\\Users\\eremin\\Downloads\\elemer_app\\dist\\RESOURCE_LOG.txt", "w"))
             local_db_path_file = open(resource_path("data_files\\local_db_path.txt"), "r")
-            print("Opening local db path file:", local_db_path_file.readlines())
         except FileNotFoundError:
-            print("We found an exception!!! FileNotFoundError!!!")
             local_db_path_file = open(resource_path("data_files\\local_db_path.txt"), "w")
             local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self, "Select where to save a local database",
                                                                      "/local_database.db", "*.db")
@@ -526,10 +525,8 @@ class EnterSNListWindow(QMainWindow):
                                                                          "/local_database.db", "*.db")
             local_db_path_file.write(local_db_path)
             local_db_path_file.close()
-            print("Wrote all of those 'path' into file")
         finally:
             local_db_path = open(resource_path("data_files\\local_db_path.txt"), "r").readlines()[0].strip()
-            print(local_db_path)
         return local_db_path
 
     def add_data(self):
