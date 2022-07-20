@@ -214,9 +214,15 @@ background: white;</string>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
+            <widget class="QDial" name="dial"/>
+           </item>
+           <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Minimum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
