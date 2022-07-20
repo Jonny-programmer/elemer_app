@@ -141,9 +141,9 @@ class SelectEnterType(QMainWindow):
         uic.loadUi(resource_path("templates/SelectEnterTypeTemplate.ui"), self)
         self.setCentralWidget(self.gridWidget)
         # Установка фона
-        # palette = QPalette()
-        # palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/img.png"))))
-        # self.setPalette(palette)
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(resource_path("backgrounds/vector_5.png"))))
+        self.setPalette(palette)
 
         self.opt_1_btn.clicked.connect(lambda: self.move_on("opt_multiple"))
         self.opt_2_btn.clicked.connect(lambda: self.move_on("opt_db"))
