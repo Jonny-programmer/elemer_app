@@ -130,7 +130,7 @@ color: rgb(10, 87, 182);
            <property name="font">
             <font>
              <family>Times New Roman</family>
-             <pointsize>14</pointsize>
+             <pointsize>12</pointsize>
             </font>
            </property>
           </widget>
