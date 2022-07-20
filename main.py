@@ -115,15 +115,13 @@ def dbg(filename):
                 pp(kwa, stream=f)
                 print(res, file=f)
             return res
-
         return wrapper
-
     return decorator
 
 
-@dbg(r"/Users/eremin/Downloads/log.txt")
+@dbg(r"/Users/eremin/Downloads/elemer_app/dist/file_log.txt")
 def resource_path(relative):
-    # Чтобы программа всегда могла найти путь к файлам
+    # Чтобы .exe мог найти путь к файлам
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative)
     return os.path.join(relative)
@@ -506,11 +504,11 @@ class EnterSNListWindow(QMainWindow):
         # self.SN_LIST = []
 
     def find_local_db_path(self):
-        if os.path.isfile(resource_path("data_files\\local_db_path.txt")):
-            with open(resource_path("data_files\\local_db_path.txt"), "r") as file:
+        if os.path.isfile(resource_path("data_files\local_db_path.txt")):
+            with open(resource_path("data_files\local_db_path.txt"), "r") as file:
                 local_db_path = file.readlines()[0].strip()
         else:
-            with open(resource_path("data_files\\local_db_path.txt"), "w") as local_db_path_file:
+            with open(resource_path("data_files\local_db_path.txt"), "w") as local_db_path_file:
                 local_db_path, ok4_pressed = QFileDialog.getSaveFileName(self, "Select where to save a local database",
                                                                          "/local_database.db", "*.db")
                 while not ok4_pressed:
