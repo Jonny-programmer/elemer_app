@@ -36,11 +36,13 @@ def minus_one_operator(order_num, cur, conn):
     table_op_quant = cur.execute("""SELECT operators_quant FROM control_table WHERE order_num=?""", (order_num,)).fetchone()
     if not table_op_quant:
         cur.execute("INSERT INTO control_table (order_num, operators_quant) VALUES (?, 0)", (order_num,))
-        table_op_quant = 0
+        table_op_quant = 1
     else:
         table_op_quant = table_op_quant[0] - 1
     cur.execute("""UPDATE control_table SET operators_quant=? WHERE order_num=?""", (table_op_quant, order_num,))
     conn.commit()
+    if table_op_quant == 0:
+        return
     call_string = str(f"ALTER TABLE order_{order_num} DROP COLUMN operator_{table_op_quant}")
     cur.execute(call_string)
     conn.commit()
